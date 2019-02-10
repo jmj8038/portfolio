@@ -1,0 +1,32 @@
+drop trigger bookbacktrigger;
+drop trigger bookborrowtrigger;
+drop trigger bookreturntrigger;
+
+create or replace trigger bookbacktrigger
+before delete
+on book
+for each row
+begin
+   insert into book_backup values(:old.청구번호, :old.제목, :old.저자, :old.발행자, :old.발행년도, :old.위치, :old.분류, :old.대출현황);
+end;
+/
+
+create or replace trigger bookborrowtrigger
+before update
+on 
+member
+for each row
+begin
+update book set 대출현황 = 0 where :new.대출책번호 = 청구번호;
+end;
+/
+
+create or replace trigger bookreturntrigger
+before update
+on 
+member
+for each row
+begin
+update book set 대출현황 = 1 where :new.대출책번호 = 99999 and :old.대출책번호 = 청구번호;
+end;
+/

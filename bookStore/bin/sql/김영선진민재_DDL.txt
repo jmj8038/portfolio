@@ -1,0 +1,54 @@
+﻿-- 테이블과 제약조건 삭제
+drop table member cascade constraint;
+drop table supplier_member cascade constraint;
+drOP TABLE book cascade constraint;
+drop table book_backup cascade constraint;
+
+-- 테이블 생성
+create table supplier_member (
+supp_no number(3) primary key constraint suppliermember_no_ck check(supp_no between 111 and 999),
+업체이름 varchar2(20) not null,
+업체ID varchar2(200) not null,
+업체전화번호 varchar2(50) not null,
+특징 varchar2(20) not null
+);
+
+create table book (
+청구번호 number(5) PRIMARY KEY constraint book_no_ck check(청구번호 between 10001 and 99999), 
+제목 VARCHAR2(100) NOT NULL,
+저자 VARCHAR2(100) NOT NULL, 
+발행자 VARCHAR2(100) NOT NULL, 
+발행년도 number(5), 
+위치 VARCHAR2(100), 
+분류 number(5),
+대출현황 number(2) default 0 constraint book_borrowstate_ck check(대출현황=0 or 대출현황=1)
+); 
+
+
+create table member (
+member_no number(4) primary key constraint member_no_ck check(member_no between 1111 and 9999),
+회원이름 varchar2(20) not null,
+회원ID varchar2(200) not null,
+회원전화번호 varchar2(50) not null,
+회원생년월일 date not null,
+회원비밀번호 number(4) not null,
+특징 varchar2(50) not null,
+대출책번호 number(5) not null,
+대출일자 date not null,
+반납일자 date not null
+);
+
+create table book_backup as select * from book where 1=0;
+
+alter table member add constraint member_borrow_no_fk foreign key(대출책번호) references book(청구번호);
+alter table book add constraint book_sort_fk foreign key(분류) references supplier_member(supp_no);
+
+purge recyclebin;
+select * from tab;
+
+desc member;
+desc supplier_member;
+desc book;
+desc book_backup;
+
+select * from book_backup;
